@@ -1,0 +1,208 @@
+# Introduction to R and RStudio
+
+## What is R?
+
+R is a programming language designed for statistics and data analysis.\
+It is heavily used in bioinformatics (RNA-seq, GWAS, microbiome,
+proteomics).
+
+## R vs RStudio
+
+-   R = the engine that performs calculations
+-   RStudio = the interface (IDE) where we write and manage code
+
+Always write your code in a script (.R file), not only in the console.
+
+------------------------------------------------------------------------
+
+# Basic R Syntax
+
+## Comments
+
+``` {r}
+# This is a comment
+```
+
+## Basic Arithmetic
+
+``` {r}
+2 + 2
+5 * 3
+10 / 2
+2^3
+```
+
+------------------------------------------------------------------------
+
+# Variables (Objects)
+
+Everything in R is an object.
+
+``` {r}
+x <- 10
+y <- 5
+x + y
+```
+
+-   `<-` is assignment operator
+-   R is case-sensitive
+
+------------------------------------------------------------------------
+
+# Data Types
+
+## Numeric
+
+``` {r}
+num <- 5.5
+class(num)
+```
+
+## Character
+
+``` {r}
+gene <- "TP53"
+class(gene)
+```
+
+## Logical
+
+``` {r}
+test <- TRUE
+class(test)
+```
+
+------------------------------------------------------------------------
+
+# Functions
+
+``` {r}
+sqrt(16)
+mean(c(1,2,3,4))
+length(c(1,2,3))
+```
+
+------------------------------------------------------------------------
+
+# Vectors
+
+``` {r}
+genes <- c("TP53", "BRCA1", "EGFR")
+expression <- c(10.5, 8.2, 15.3)
+
+genes[1]
+expression[2]
+```
+
+------------------------------------------------------------------------
+
+# Matrices
+
+``` {r}
+expr_matrix <- matrix(c(10,8,15,
+                        12,9,14),
+                      nrow = 3)
+
+rownames(expr_matrix) <- c("TP53","BRCA1","EGFR")
+colnames(expr_matrix) <- c("Sample1","Sample2")
+
+expr_matrix
+expr_matrix[1,2]
+```
+
+------------------------------------------------------------------------
+
+# Data Frames
+
+``` {r}
+expr_df <- data.frame(
+  Gene = c("TP53","BRCA1","EGFR"),
+  Sample1 = c(10,8,15),
+  Sample2 = c(12,9,14)
+)
+
+str(expr_df)
+expr_df$Sample1
+```
+
+------------------------------------------------------------------------
+
+# Tidyverse and dplyr
+
+``` {r}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+## Pipe Operator
+
+``` {r}
+expr_df %>% head()
+```
+
+## dplyr Verbs
+
+``` {r}
+expr_df %>% select(Gene, Sample1)
+
+expr_df %>% filter(Sample1 > 9)
+
+expr_df %>% mutate(FoldChange = Sample2 / Sample1)
+
+expr_df %>% arrange(desc(Sample1))
+
+expr_df %>% summarise(mean_sample1 = mean(Sample1))
+
+expr_df$Condition <- c("Control","Treatment","Treatment")
+
+expr_df %>%
+  group_by(Condition) %>%
+  summarise(mean_expression = mean(Sample1))
+```
+
+------------------------------------------------------------------------
+
+# Wide vs Long Omics Data
+
+## pivot_longer()
+
+``` {r}
+expr_long <- expr_df %>%
+  pivot_longer(
+    cols = starts_with("Sample"),
+    names_to = "Sample",
+    values_to = "Expression"
+  )
+```
+
+## pivot_wider()
+
+``` {r}
+expr_wide <- expr_long %>%
+  pivot_wider(
+    names_from = Sample,
+    values_from = Expression
+  )
+```
+
+------------------------------------------------------------------------
+
+# Mini Bioinformatics Task
+
+1.  Create gene expression table (5 genes × 3 samples)
+2.  Add condition metadata (Control/Treatment)
+3.  Convert wide → long
+4.  Calculate mean expression per condition
+5.  Interpret biological meaning
+
+------------------------------------------------------------------------
+
+# Learning Outcomes
+
+-   Write basic R syntax
+-   Understand objects and data types
+-   Create vectors, matrices, and data frames
+-   Understand RNA-seq count matrix structure
+-   Use dplyr for data manipulation
+-   Convert between wide and long omics formats
+-   Think in tidyverse logic
